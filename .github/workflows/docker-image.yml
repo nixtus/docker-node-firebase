@@ -23,7 +23,9 @@ jobs:
         run: docker build . --file Dockerfile -t nixtus/node-firebase:${{env.DOCKER_TAG}} -t nixtus/node-firebase:latest
  
       - name: Docker Push
-        run: docker push nixtus/node-firebase:${{env.DOCKER_TAG}}
+        run: |
+          docker push nixtus/node-firebase:${{env.DOCKER_TAG}}
+          docker push nixtus/node-firebase:latest
 
       - name: Docker Logout
         run: docker logout
