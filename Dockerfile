@@ -1,3 +1,3 @@
-FROM node:current-alpine3.23
+FROM node:lts-alpine
 
 RUN npm install -g firebase-tools
