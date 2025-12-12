@@ -1,9 +1,9 @@
 name: Docker Image CI
 
 on:
-  [workflow_dispatch]
-#   push:
-#     branches: [ "main" ]
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
 
 jobs:
 
@@ -14,9 +14,18 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+
     - name: Build the Docker image
-      run: docker build ./ --file Dockerfile --tag nixtus/node-firebase :$(date +%s)
+      run: |
+        # create a stable timestamp for tagging
+        TIMESTAMP=$(date +%s)
+        # build and tag both 'latest' and the timestamped tag (no stray spaces)
+        docker build . --file Dockerfile --tag nixtus/node-firebase:latest --tag nixtus/node-firebase:${TIMESTAMP}
+        # persist the timestamp for the next step
+        echo "IMAGE_TIMESTAMP=${TIMESTAMP}" >> $GITHUB_ENV
+
     - name: Publish the Docker image
       run: |
         docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
         docker push nixtus/node-firebase:latest
+        docker push nixtus/node-firebase:${IMAGE_TIMESTAMP}
